@@ -479,6 +479,16 @@ async function runPipelineStep(step) {
         'load': 'Data Loading'
     };
     
+    // Update UI to show running status immediately
+    const statusElement = document.getElementById(`${step}Status`);
+    const badge = statusElement.querySelector('.status-badge');
+    const button = document.getElementById(`${step}Btn`);
+    
+    badge.classList.remove('status-idle', 'status-running', 'status-success', 'status-error', 'status-started');
+    badge.classList.add('status-running');
+    badge.textContent = '⏳ Running...';
+    button.disabled = true;
+    
     try {
         let url = `${API_BASE_URL}/pipeline/${step}`;
         let requestOptions = {
@@ -503,6 +513,8 @@ async function runPipelineStep(step) {
         
     } catch (error) {
         showNotification(`Error: ${error.message}`, 'error');
+        // Reset status on error
+        await checkPipelineStatus();
     }
 }
 
