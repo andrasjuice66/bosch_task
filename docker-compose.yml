@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bosch_postgres
+    environment:
+      POSTGRES_DB: sensor_data
+      POSTGRES_USER: bosch_user
+      POSTGRES_PASSWORD: bosch_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bosch_user -d sensor_data"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - network
+volumes:
+  postgres_data:
+
+networks:
+  network:
+    driver: bridge
