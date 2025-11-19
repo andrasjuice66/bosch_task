@@ -162,9 +162,9 @@ docker-compose down -v
 
 ## Technologies Used
 
-- **Backend**: FastAPI, Python 3.12
-- **Data Processing**: PySpark 3.5
-- **Database**: PostgreSQL 15
+- **Backend**: FastAPI, Python 
+- **Data Processing**: PySpark
+- **Database**: PostgreSQL
 - **Frontend**: Vanilla JavaScript, HTML5, CSS3
 - **Containerization**: Docker, Docker Compose
 - **Testing**: pytest
