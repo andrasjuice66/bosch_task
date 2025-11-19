@@ -1,4 +1,4 @@
-from pipeline.sql_scripts import integrity_checks, create_main_table
+from sql_scripts import integrity_checks, create_main_table
 
 from pyspark.sql import SparkSession
 from sqlalchemy import create_engine, text

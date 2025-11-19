@@ -171,7 +171,7 @@ class SensorDataGenerator:
 
 
 def main():
-    
+
     parser = argparse.ArgumentParser(description="Generate synthetic sensor data")
     parser.add_argument(
         "num_rows",

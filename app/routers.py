@@ -6,7 +6,7 @@ import logging
 
 from app.database import get_db
 from app.models import SensorIDResponse, SensorDataDetail, SensorSummary, HealthResponse
-from app.sql_scripts import table_query
+from app.sql_scripts import table_query, summary_query
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -113,10 +113,13 @@ async def get_sensor_data(
         List of sensor data records with all features (pivoted structure)
     """
     try:
-        query = table_query + """
+        query = (
+            table_query
+            + """
             ORDER BY ts_date ASC
             LIMIT :limit
         """
+        )
 
         params = {"sensor_id": sensor_id, "limit": limit}
 
@@ -164,47 +167,8 @@ async def get_sensor_summary(sensor_id: str, db: Session = Depends(get_db)):
         Summary statistics including readings count, date ranges, quality metrics
     """
     try:
-        query = """
-            WITH most_common_location AS (
-                SELECT "Location"
-                FROM sensor_data_main
-                WHERE "Sensor_ID" = :sensor_id
-                GROUP BY "Location"
-                ORDER BY COUNT(*) DESC
-                LIMIT 1
-            )
-            SELECT 
-                "Sensor_ID",
-                (SELECT "Location" FROM most_common_location) as "Location",
-                COUNT(*) as days_of_data,
-                MIN(ts_date) as first_reading,
-                MAX(ts_date) as last_reading,
-                MAX(total_readings) as total_readings,
-                MAX(total_bad) as total_bad,
-                ROUND(MAX(total_pct_bad)::numeric * 100, 2) as total_pct_bad,
-                MAX(days_active) as days_active,
-                SUM(any_bad) as bad_days_count,
-                ROUND(AVG(any_bad)::numeric * 100, 2) as pct_bad_days,
-                COUNT("Temperature") as has_temperature,
-                COUNT("Humidity") as has_humidity,
-                COUNT("Pressure") as has_pressure,
-                COUNT("Vibration") as has_vibration,
-                COUNT("Noise") as has_noise,
-                COUNT("Current") as has_current,
-                COUNT("Offset") as has_offset,
-                ROUND(AVG("Temperature")::numeric, 2) as avg_temperature,
-                ROUND(AVG("Humidity")::numeric, 2) as avg_humidity,
-                ROUND(AVG("Pressure")::numeric, 2) as avg_pressure,
-                ROUND(AVG("Vibration")::numeric, 2) as avg_vibration,
-                ROUND(AVG("Noise")::numeric, 2) as avg_noise,
-                ROUND(AVG("Current")::numeric, 2) as avg_current,
-                ROUND(AVG("Offset")::numeric, 2) as avg_offset
-            FROM sensor_data_main
-            WHERE "Sensor_ID" = :sensor_id
-            GROUP BY "Sensor_ID"
-        """
 
-        result = db.execute(text(query), {"sensor_id": sensor_id})
+        result = db.execute(text(summary_query), {"sensor_id": sensor_id})
         row = result.fetchone()
 
         if not row:
