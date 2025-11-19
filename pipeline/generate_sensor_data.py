@@ -22,7 +22,7 @@ class SensorDataGenerator:
 
     def __init__(
         self,
-        num_rows: int = 500000,
+        num_rows: int = 100000,
         start_date: datetime = datetime(2024, 1, 1),
         end_date: datetime = datetime(2025, 11, 14),
         output_path: str = "data/raw/sensor_data.csv",
@@ -31,7 +31,7 @@ class SensorDataGenerator:
         Initialize the sensor data generator.
 
         Args:
-            num_rows: Number of rows to generate (default: 500,000)
+            num_rows: Number of rows to generate (default: 100,000)
         """
         self.num_rows = num_rows
         self.start_date = start_date
@@ -171,7 +171,7 @@ class SensorDataGenerator:
 
 
 def main():
-    """Main function to generate sensor data."""
+    
     parser = argparse.ArgumentParser(description="Generate synthetic sensor data")
     parser.add_argument(
         "num_rows",
@@ -180,40 +180,10 @@ def main():
         default=100000,
         help="Number of rows to generate (default: 100000)",
     )
-    parser.add_argument(
-        "--start-date",
-        type=str,
-        default="2024-01-01",
-        help="Start date in YYYY-MM-DD format (default: 2024-01-01)",
-    )
-    parser.add_argument(
-        "--end-date",
-        type=str,
-        default="2025-11-14",
-        help="End date in YYYY-MM-DD format (default: 2025-11-14)",
-    )
-    parser.add_argument(
-        "--output",
-        type=str,
-        default="data/raw/sensor_data.csv",
-        help="Output CSV file path (default: data/raw/sensor_data.csv)",
-    )
 
     args = parser.parse_args()
 
-    start_date = datetime.strptime(args.start_date, "%Y-%m-%d")
-    end_date = datetime.strptime(args.end_date, "%Y-%m-%d")
-
-    logger.info(f"Starting data generation with {args.num_rows} rows")
-    logger.info(f"Date range: {args.start_date} to {args.end_date}")
-    logger.info(f"Output path: {args.output}")
-
-    generator = SensorDataGenerator(
-        num_rows=args.num_rows,
-        start_date=start_date,
-        end_date=end_date,
-        output_path=args.output,
-    )
+    generator = SensorDataGenerator(num_rows=args.num_rows)
     df = generator.generate_data()
     generator.save_to_csv(df)
 

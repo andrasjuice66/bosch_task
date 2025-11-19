@@ -238,7 +238,6 @@ class DatabaseLoader:
 
 
 def main():
-    """Main function to load data and run integrity checks."""
     loader = DatabaseLoader()
 
     try:

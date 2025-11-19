@@ -515,10 +515,6 @@ class SensorDataProcessor:
 
 
 def main():
-    """
-    Entry point for running the processing pipeline end-to-end.
-    Adjust parameters as needed (e.g., db connection).
-    """
     processor = SensorDataProcessor(
         input_path="data/raw/sensor_data.csv",
         output_path="data/processed/sensor_data_main.parquet",
