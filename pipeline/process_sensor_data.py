@@ -17,7 +17,6 @@ class SensorDataProcessor:
         spark: SparkSession instance
         input_path: Path to input data
         output_path: Path to save processed data (Parquet)
-        db_url: JDBC URL for database (optional)
         db_table: Target table name for database (optional)
         db_properties: JDBC connection properties (user, password, driver) (optional)
     """
@@ -26,7 +25,6 @@ class SensorDataProcessor:
         self,
         input_path: str = "data/raw/sensor_data.csv",
         output_path: str = "data/processed/sensor_data_main.parquet",
-        db_url: Optional[str] = None,
         db_table: Optional[str] = None,
         db_properties: Optional[Dict[str, str]] = None,
     ):
@@ -42,7 +40,6 @@ class SensorDataProcessor:
         """
         self.input_path = input_path
         self.output_path = output_path
-        self.db_url = db_url
         self.db_table = db_table
         self.db_properties = db_properties or {}
         self.spark = self._create_spark_session()
@@ -110,28 +107,6 @@ class SensorDataProcessor:
         (df.write.mode("overwrite").parquet(path))
         logger.info("Parquet save complete")
 
-    def write_to_database(self, df: DataFrame) -> None:
-        """
-        Write the main DataFrame to a database via JDBC (single table).
-
-        Requires the JDBC driver JAR on the Spark classpath (e.g., via --jars).
-
-        Args:
-            df: Main DataFrame to write
-        """
-        if not (self.db_url and self.db_table and self.db_properties.get("driver")):
-            logger.info("Database parameters not fully provided; skipping DB write.")
-            return
-
-        logger.info(
-            f"Writing main table to database {self.db_url} table {self.db_table} ..."
-        )
-        (
-            df.write.mode("overwrite").jdbc(
-                url=self.db_url, table=self.db_table, properties=self.db_properties
-            )
-        )
-        logger.info("Database write complete")
 
     def preprocess(self, df: DataFrame) -> DataFrame:
         """
@@ -488,7 +463,6 @@ class SensorDataProcessor:
         - Preprocess
         - Build main table (pivot + windows + aggregations merged)
         - Save to Parquet (single dataset)
-        - Optionally write the same main table to a database (single table)
         """
         raw_df = self.load_data()
         clean_df = self.preprocess(raw_df)
@@ -496,9 +470,7 @@ class SensorDataProcessor:
 
         self.save_parquet(main_df, self.output_path)
 
-        self.write_to_database(main_df)
-
-        logger.info("Pipeline finished. Main table saved and optionally loaded to DB.")
+        logger.info("Pipeline finished. Main table saved.")
 
 
 def main():
