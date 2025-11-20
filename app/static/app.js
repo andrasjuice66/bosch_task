@@ -214,7 +214,7 @@ function renderTable() {
     const tbody = document.getElementById('tableBody');
     
     if (filteredData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="16" class="empty-state">No data found matching your criteria.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="18" class="empty-state">No data found matching your criteria.</td></tr>';
         return;
     }
     
@@ -235,9 +235,11 @@ function renderTable() {
             <td>${formatNumber(row.Humidity)}</td>
             <td>${formatNumber(row.mean_7r_humidity)}</td>
             <td>${formatNumber(row.Vibration)}</td>
-            <td>${formatNumber(row.mean_7r_vibration)}</td>
+            <td>${formatNumber(row.mo_avg_Vibration)}</td>
             <td>${formatNumber(row.Noise)}</td>
             <td>${formatNumber(row.prev_noise)}</td>
+            <td>${formatNumber(row.Offset)}</td>
+            <td>${formatNumber(row.mo_pct_bad_Offset)}</td>
             <td>${formatNumber(row.Current)}</td>
             <td>${formatNumber(row.mean_7r_current)}</td>
         </tr>
@@ -374,8 +376,8 @@ function exportToCSV() {
     }
     
     const headers = ['ts_date', 'Location', 'any_bad', 'good_streak_days', 'Temperature', 'delta_temperature', 
-                     'Pressure', 'delta_pressure', 'Humidity', 'mean_7r_humidity', 'Vibration', 'mean_7r_vibration', 
-                     'Noise', 'prev_noise', 'Current', 'mean_7r_current'];
+                     'Pressure', 'delta_pressure', 'Humidity', 'mean_7r_humidity', 'Vibration', 'mo_avg_Vibration', 
+                     'Noise', 'prev_noise', 'Offset', 'mo_pct_bad_Offset', 'Current', 'mean_7r_current'];
     
     let csv = headers.join(',') + '\n';
     
@@ -633,7 +635,7 @@ function setupEventListeners() {
         document.getElementById('summarySection').style.display = 'none';
         
         const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '<tr><td colspan="16" class="empty-state">Select a sensor to view sensor readings</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="18" class="empty-state">Select a sensor to view sensor readings</td></tr>';
         
         document.getElementById('pagination').style.display = 'none';
         document.getElementById('exportBtn').style.display = 'none';
